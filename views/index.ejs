@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>MY APP</title>
+</head>
+
+<body>
+  Upcoming Birthday's:
+
+  <ul class="person">
+    <% for(var i=0; i<person.length; i++) {%>
+    <li class="person">
+      <span><%= person[i].firstName %></span>
+      <span><%= person[i].lastName %></span>
+      <span><%= person[i].birthday %></span>
+      <span><button id="delete" name="<%= person[i].ID %>"> Delete </button></span>
+    </li>
+    <% } %>
+  </ul>
+
+  <form action="/person" method="POST">
+    <input type="text" placeholder="first name" name="firstName">
+    <input type="text" placeholder="last name" name="lastName">
+    <input type="date" placeholder="birthday DD-MM-YYYY" name="birthday">
+    <button type="submit">Submit</button>
+  </form>
+
+  <div>
+    <h2>Update contact</h2>
+    <button id="update"> Update </button>
+  </div>
+
+  <div>
+    <h2>Delete Person</h2>
+    <button id="delete"> Delete </button>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+
+
+
+</html>
