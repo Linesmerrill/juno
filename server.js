@@ -24,14 +24,31 @@ app.use(express.static('public'))
 app.get('/', (req, res) => {
   db.collection('person').find().toArray((err, result) => {
     if (err) return console.log(err)
-    res.render('index.ejs', {person: result})
+
+    for(var i=0; i<result.length; i++) {
+      result[i]
+      var date1 = new Date(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(result[i].birthday.year) + 1));
+      var date2 = new Date();
+      var diffDays = parseInt((date1 - date2) / (1000 * 60 * 60 * 24)); //gives day difference 
+      result[i].daysToBirthday = diffDays
+    }
+    result.sort(function(a, b) {
+      return a.daysToBirthday - b.daysToBirthday;
+    });
+    res.render('dashboard.ejs', {person: result})
   })
 })
 
 app.post('/person', (req, res) => {
   console.log("Before: " , req.body)
   req.body.ID = xid.next();
+  yyyymmdd = req.body.birthday.split("-")
+  console.log("after split: ", yyyymmdd)
+  req.body.birthday = { "month": yyyymmdd[1], "day": yyyymmdd[2], "year": yyyymmdd[0]}
+  // req.body.birthday.day = 
+  // req.body.birthday.year = 
   console.log("After: ", req.body)
+
   db.collection('person').save(req.body, (err, result) => {
     if (err) return console.log(err)
 
