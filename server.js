@@ -68,18 +68,13 @@ app.get('/', (req, res) => {
 })
 
 app.post('/person', (req, res) => {
-  console.log("Before: ", req.body)
   req.body.ID = xid.next();
-  yyyymmdd = req.body.birthday.split("-")
-  console.log("after split: ", yyyymmdd)
+  birthdayYearMonthDay = req.body.birthday.split("-")
   req.body.birthday = {
-    "month": yyyymmdd[1],
-    "day": yyyymmdd[2],
-    "year": yyyymmdd[0]
+    "month": birthdayYearMonthDay[1],
+    "day": birthdayYearMonthDay[2],
+    "year": birthdayYearMonthDay[0]
   }
-  // req.body.birthday.day = 
-  // req.body.birthday.year = 
-  console.log("After: ", req.body)
 
   db.collection('person').save(req.body, (err, result) => {
     if (err) return console.log(err)
