@@ -32,31 +32,37 @@ app.get('/', (req, res) => {
     yyyy = moment().format('YYYY');
     mm = moment().format('MM');
     dd = moment().format('DD');
+    var b
     for (var i = 0; i < result.length; i++) {
       if (mm == result[i].birthday.month && dd == result[i].birthday.day) {
         // Happy Birthday! it is today!
-        diffDays = 0
+        b = 0
       } else if (mm == result[i].birthday.month) {
         // we are in the same month, lets check if it has passed or not
         if (dd > result[i].birthday.day) {
           // just passed your birthday
-          var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
+          b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
         } else {
           // youve got a couple days left ;)
-          var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
+          b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
         }
       } else if (mm > result[i].birthday.month) {
         // b day already happened add 1 to year
-        var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
+        b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
 
       } else {
         // get days with current year
-        var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
+        b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
       }
 
-      var days = b.diff(newTime, 'days');
+      if (b == 0) {
+        result[i].daysToBirthday = 0
+      } else {
+        var days = b.diff(newTime, 'days');
 
-      result[i].daysToBirthday = days
+        result[i].daysToBirthday = days
+      }
+      
     }
     result.sort(function (a, b) {
       return a.daysToBirthday - b.daysToBirthday;

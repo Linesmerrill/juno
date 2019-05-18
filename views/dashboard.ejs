@@ -48,7 +48,7 @@
               <p>Dashboard</p>
             </a>
           </li>
-          <li>
+          <%# <li>
             <a href="./icons.html">
               <i class="nc-icon nc-diamond"></i>
               <p>Icons</p>
@@ -59,7 +59,7 @@
               <i class="nc-icon nc-pin-3"></i>
               <p>Maps</p>
             </a>
-          </li>
+          </li> %>
           <li>
             <a href="./notifications.html">
               <i class="nc-icon nc-bell-55"></i>
@@ -78,7 +78,7 @@
               <p>Table List</p>
             </a>
           </li>
-          <li>
+          <%# <li>
             <a href="./typography.html">
               <i class="nc-icon nc-caps-small"></i>
               <p>Typography</p>
@@ -89,7 +89,7 @@
               <i class="nc-icon nc-spaceship"></i>
               <p>Upgrade to PRO</p>
             </a>
-          </li>
+          </li> %>
         </ul>
       </div>
     </div>
@@ -188,14 +188,18 @@
                 <div class="card-footer ">
                   <hr>
                   <div class="stats">
+                    <% if (person[i].daysToBirthday == 0) {%>
+                      <i class="fa fa-gift"></i> Happy Birthday! '🎈🎉🎈🎉🎈🎉🎈🎉'
+                    <%} else {%> 
                     <i class="fa fa-calendar-o"></i> <%= person[i].daysToBirthday %> days
+                    <% } %>
                   </div>
                 </div>
               </div>
             </div>
             <% } %>
         </div>
-        <div class="row">
+        <%# <div class="row">
           <div class="col-md-12">
             <div class="card ">
               <div class="card-header ">
@@ -259,7 +263,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> %>
       </div>
   <!-- Modal -->
   <form action="/person" method="POST">
