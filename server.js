@@ -1,8 +1,9 @@
 const express = require('express');
-const bodyParser= require('body-parser')
+const bodyParser = require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient
 const xid = require('xid-js');
+const moment = require('moment');
 
 var db
 
@@ -17,7 +18,9 @@ MongoClient.connect(url, (err, client) => {
 })
 
 app.set('view engine', 'ejs')
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({
+  extended: true
+}))
 app.use(bodyParser.json())
 app.use(express.static('public'))
 
@@ -25,26 +28,55 @@ app.get('/', (req, res) => {
   db.collection('person').find().toArray((err, result) => {
     if (err) return console.log(err)
 
-    for(var i=0; i<result.length; i++) {
-      result[i]
-      var date1 = new Date(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(result[i].birthday.year) + 1));
-      var date2 = new Date();
-      var diffDays = parseInt((date1 - date2) / (1000 * 60 * 60 * 24)); //gives day difference 
-      result[i].daysToBirthday = diffDays
+    newTime = moment().format('L');
+    yyyy = moment().format('YYYY');
+    mm = moment().format('MM');
+    dd = moment().format('DD');
+    for (var i = 0; i < result.length; i++) {
+      if (mm == result[i].birthday.month && dd == result[i].birthday.day) {
+        // Happy Birthday! it is today!
+        diffDays = 0
+      } else if (mm == result[i].birthday.month) {
+        // we are in the same month, lets check if it has passed or not
+        if (dd > result[i].birthday.day) {
+          // just passed your birthday
+          var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
+        } else {
+          // youve got a couple days left ;)
+          var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
+        }
+      } else if (mm > result[i].birthday.month) {
+        // b day already happened add 1 to year
+        var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + (parseInt(yyyy) + 1), 'MM/DD/YYYY'); //future
+
+      } else {
+        // get days with current year
+        var b = moment(result[i].birthday.month + "/" + result[i].birthday.day + "/" + yyyy, 'MM/DD/YYYY'); //future
+      }
+
+      var days = b.diff(newTime, 'days');
+
+      result[i].daysToBirthday = days
     }
-    result.sort(function(a, b) {
+    result.sort(function (a, b) {
       return a.daysToBirthday - b.daysToBirthday;
     });
-    res.render('dashboard.ejs', {person: result})
+    res.render('dashboard.ejs', {
+      person: result
+    })
   })
 })
 
 app.post('/person', (req, res) => {
-  console.log("Before: " , req.body)
+  console.log("Before: ", req.body)
   req.body.ID = xid.next();
   yyyymmdd = req.body.birthday.split("-")
   console.log("after split: ", yyyymmdd)
-  req.body.birthday = { "month": yyyymmdd[1], "day": yyyymmdd[2], "year": yyyymmdd[0]}
+  req.body.birthday = {
+    "month": yyyymmdd[1],
+    "day": yyyymmdd[2],
+    "year": yyyymmdd[0]
+  }
   // req.body.birthday.day = 
   // req.body.birthday.year = 
   console.log("After: ", req.body)
@@ -59,25 +91,34 @@ app.post('/person', (req, res) => {
 
 app.put('/person', (req, res) => {
   db.collection('person')
-  .findOneAndUpdate({firstName: 'Callie'}, {
-    $set: {
-      firstName: req.body.firstName,
-      lastNme: req.body.lastName,
-      birthday: req.body.birthday
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
+    .findOneAndUpdate({
+      firstName: 'Callie'
+    }, {
+      $set: {
+        firstName: req.body.firstName,
+        lastNme: req.body.lastName,
+        birthday: req.body.birthday
+      }
+    }, {
+      sort: {
+        _id: -1
+      },
+      upsert: true
+    }, (err, result) => {
+      if (err) return res.send(err)
+      res.send(result)
+    })
 })
 
 app.delete('/person', (req, res) => {
-  db.collection('person').findOneAndDelete({ID: req.body.ID},
-  (err, result) => {
-    if (err) return res.send(500, err)
-    res.send({message: 'A person was deleted', response: res.body})
-  })
+  db.collection('person').findOneAndDelete({
+      ID: req.body.ID
+    },
+    (err, result) => {
+      if (err) return res.send(500, err)
+      res.send({
+        message: 'A person was deleted',
+        response: res.body
+      })
+    })
 })
